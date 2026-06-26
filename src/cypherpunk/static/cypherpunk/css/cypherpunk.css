@@ -1,0 +1,43 @@
+#nilpoint-container {
+}
+
+/* The parent container holding the row of divs */
+.cypherpunk-deck {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    height: 400px;
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* The structural wrapper frame (Must match HTML spelling) */
+.cypherpunk-module-slot {
+    height: 100%; /* Explicitly match deck height */
+    aspect-ratio: 4 / 3; /* Mandate the 4:3 ratio shape */
+    flex-shrink: 0; /* Don't let flexbox crush its width */
+}
+
+/* The inner content returned by HTMX */
+.cypherpunk-module {
+    width: 100%; /* Fill 100% of the slot's width */
+    height: 100%; /* Fill 100% of the slot's height */
+
+    padding: 0px; /* Padding will be different per module, so should be set by the
+   module content container */
+
+    /* Background settings handle the image inside the module */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* TODO: Individual styling of text etc. overriding page design and
+   light/dark mode (because we are making game components that don't
+   have ligh/dark. Maybe later we can have alternate colours and
+   backgrounds depending on the current theme? */
+
+.cypherpunk-help-module-content {
+    padding: 2.1rem;
+    padding-left: 2.6rem;
+}

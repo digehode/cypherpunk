@@ -1,0 +1,8 @@
+<div class="cypherpunk-deck">
+    {% for module in deck.modules.all %}
+        <div class="cypherpunk-module-slot"
+             hx-get="{{ game.get_dispatch_url }}?action=module&id={{ module.id }}"
+             hx-target="this"
+             hx-trigger="load">Loading a {{ module.module_type }} module with ID {{ module.id }}</div>
+    {% endfor %}
+</div>
