@@ -1,5 +1,4 @@
-from django.http import HttpResponse
-from nilpoint.views import NilpointGameBasic
+from nilpoint.views import NilpointGameBasic, HtmxTriggerResponse
 from .models import Module
 
 
@@ -9,7 +8,7 @@ class CypherpunkGameView(NilpointGameBasic):
     # landing_partial = "cypherpunk/landing.jinja2#landing"
 
     def test_view(self, request, *args, **kwargs):
-        return HttpResponse("This worked", content_type="text/plain")
+        return HtmxTriggerResponse(content="This worked", content_type="text/plain")
 
     def deck_view(self, request, *args, **kwargs):
         template = "cypherpunk/deck/deck_base.jinja2"
@@ -18,7 +17,7 @@ class CypherpunkGameView(NilpointGameBasic):
             deck = pc.deck
             print(type(pc))
         except Exception as e:
-            return HttpResponse(f"Error: {e}")
+            return HtmxTriggerResponse(content=f"Error: {e}")
         return self.nilpoint_render(request, template, {"deck": deck})
 
     def module_view(self, request, *args, **kwargs):
