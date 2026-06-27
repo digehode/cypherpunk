@@ -1,5 +1,14 @@
-#nilpoint-container {
+@font-face {
+    font-family: "lcd-text";
+    /* TODO: Need some way to inject not just CSS, but template components
+       so these can be done with the use of temlate tags */
+    font-weight: 700;
+
+    src: url("/static/cypherpunk/fonts/PixelifySans-VariableFont_wght.ttf");
 }
+
+/* #nilpoint-container { */
+/* } */
 
 /* The parent container holding the row of divs */
 .cypherpunk-deck {
@@ -32,12 +41,22 @@
     background-repeat: no-repeat;
 }
 
-/* TODO: Individual styling of text etc. overriding page design and
-   light/dark mode (because we are making game components that don't
-   have ligh/dark. Maybe later we can have alternate colours and
-   backgrounds depending on the current theme? */
+/* Module Styles */
 
 .cypherpunk-help-module-content {
-    padding: 2.1rem;
-    padding-left: 2.6rem;
+    padding-top: 2.8rem;
+    padding-left: 3rem;
+    padding-right: 1.8rem;
+}
+
+.cypherpunk-help-module-content p {
+    color: rgb(80, 250, 80);
+    text-shadow:
+        0px 0px 10px rgb(0, 0, 0),
+        4px 4px 1px rgba(38, 62, 40, 0.7);
+    background-color: rgba(0, 50, 0, 0.1);
+    font-family: "lcd-text", monospace;
+    letter-spacing: 0.12em;
+    word-spacing: 0.5em;
+    margin-bottom: 0.15rem;
 }
