@@ -2,7 +2,7 @@
     font-family: "lcd-text";
     /* TODO: Need some way to inject not just CSS, but template components
        so these can be done with the use of temlate tags */
-    font-weight: 700;
+    font-weight: 400;
 
     src: url("/static/cypherpunk/fonts/PixelifySans-VariableFont_wght.ttf");
 }
