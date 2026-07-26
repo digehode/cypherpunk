@@ -14,10 +14,10 @@ class CypherpunkPC(PlayerCharacter):
         # Check if it's a new instance (no ID yet)
         is_new = self.pk is None
 
-        # Save A first so it gets a database ID
+        # Save the player character first so it gets a database ID
         super().save(*args, **kwargs)
 
-        # Now that A is saved, create B
+        # Now that the player character is saved, create their deck
         if is_new:
             Deck.objects.create(player_character=self)
 
@@ -45,6 +45,9 @@ class Deck(models.Model):
             HelpModuleClass = apps.get_model("cypherpunk", "HelpModule")
             HelpModuleClass.objects.create(deck=self)
 
+    def __str__(self):
+        return f"Deck ({self.id}) for PC {self.player_character.handle}"
+
 
 class Module(models.Model):
     """Superclass for specific modules"""
@@ -56,3 +59,6 @@ class Module(models.Model):
     deck = models.ForeignKey(
         Deck, null=False, on_delete=models.CASCADE, related_name="modules"
     )
+
+    def __str__(self):
+        return f"{self.module_type} module ({self.id}) for PC {self.deck.player_character.handle}"

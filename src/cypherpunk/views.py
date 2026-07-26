@@ -15,7 +15,6 @@ class CypherpunkGameView(NilpointGameBasic):
         try:
             pc = self.player_character
             deck = pc.deck
-            print(type(pc))
         except Exception as e:
             return HtmxTriggerResponse(content=f"Error: {e}")
         return self.nilpoint_render(request, template, {"deck": deck})
