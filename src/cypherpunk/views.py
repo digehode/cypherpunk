@@ -14,6 +14,10 @@ class CypherpunkGameView(NilpointGameBasic):
         template = "cypherpunk/deck/deck_base.jinja2"
         try:
             pc = self.player_character
+            if pc is None:
+                response = HtmxTriggerResponse(content="No current player")
+                response.add_trigger("player_location_changed")
+                return response
             deck = pc.deck
         except Exception as e:
             return HtmxTriggerResponse(content=f"Error: {e}")
