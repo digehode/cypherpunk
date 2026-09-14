@@ -1,14 +1,24 @@
 from django.db import models
-from nilpoint.models import Game, PlayerCharacter, Location, Exit
+from nilpoint.models import Game, PlayerCharacter, Location, Exit, Item
 from model_utils.managers import InheritanceManager
 from django.apps import apps
+from nilpoint.decorators import release_step
 
 
 class CypherpunkGame(Game):
     name = "Cypherpunk: Crouching Cypher, Hidden Punk"
     description = "Cypherpunk is a game of encryption and decryption. Enter a world of stuff, where things happen and people do things."
 
+    _latest_release = 2
+
     def initialise_game_instance(self):
+        pass
+
+    def latest_release(self):
+        return self._latest_release
+
+    @release_step(1)
+    def initial_locations(self):
         # Locations
         alley_1 = Location(
             name="An alley off a busy street",
@@ -29,6 +39,20 @@ class CypherpunkGame(Game):
         e1, e2 = Exit.create_two_way_exit(
             alley_1, "Deeper into the alley", alley_2, "Back up the alley"
         )
+        return True
+
+    @release_step(2)
+    def adding_random_item(self):
+        if self.release != 1:
+            raise
+        wotsit = Item(
+            name="A Wotsit",
+            description="It's a typical wotsit. A little worn but functional",
+            game=self,
+            graphic="",
+        )
+        wotsit.save()
+        return True
 
 
 class CypherpunkPC(PlayerCharacter):
