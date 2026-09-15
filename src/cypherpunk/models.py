@@ -1,8 +1,8 @@
-from django.db import models
-from nilpoint.models import Game, PlayerCharacter, Location, Exit, Item
-from model_utils.managers import InheritanceManager
 from django.apps import apps
+from django.db import models
+from model_utils.managers import InheritanceManager
 from nilpoint.decorators import release_step
+from nilpoint.models import Exit, Game, Item, Location, PlayerCharacter, LocationItem
 
 
 class CypherpunkGame(Game):
@@ -43,8 +43,6 @@ class CypherpunkGame(Game):
 
     @release_step(2)
     def adding_random_item(self):
-        if self.release != 1:
-            raise
         wotsit = Item(
             name="A Wotsit",
             description="It's a typical wotsit. A little worn but functional",
@@ -66,6 +64,21 @@ class CypherpunkPC(PlayerCharacter):
         # Now that the player character is saved, create their deck
         if is_new:
             Deck.objects.create(player_character=self)
+
+    @release_step(1)
+    def dummy_update(self):
+        print("Doing a dummy update")
+        return True
+
+    @release_step(2)
+    def adding_random_item(self):
+        wotsit = Item.objects.get(game=self.game, name="A Wotsit")
+        for i in Location.objects.filter(game=self.game):
+            print(i)
+        location = Location.objects.get(id=1)
+        wotsit_location = LocationItem(location=location, pc=self, item=wotsit)
+        wotsit_location.save()
+        return True
 
 
 class Deck(models.Model):
