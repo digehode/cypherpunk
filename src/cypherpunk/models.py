@@ -9,7 +9,7 @@ class CypherpunkGame(Game):
     name = "Cypherpunk: Crouching Cypher, Hidden Punk"
     description = "Cypherpunk is a game of encryption and decryption. Enter a world of stuff, where things happen and people do things."
 
-    _latest_release = 2
+    _latest_release = 3
 
     def initialise_game_instance(self):
         pass
@@ -21,6 +21,7 @@ class CypherpunkGame(Game):
     def initial_locations(self):
         # Locations
         alley_1 = Location(
+            asset_id="ALLEY",
             name="An alley off a busy street",
             description="All around is the detritus of a busy city. Wrappers, junk and organic smells.  Something about the signs is off. It might be in a language you don't understand, but it looks more like gibberish.",
             game=self,
@@ -28,6 +29,7 @@ class CypherpunkGame(Game):
             initial=True,
         )
         alley_2 = Location(
+            asset_id="ALLEY_END",
             name="End of an alley",
             description="The same alley, but more so",
             game=self,
@@ -37,20 +39,28 @@ class CypherpunkGame(Game):
         alley_1.save()
         alley_2.save()
         e1, e2 = Exit.create_two_way_exit(
-            alley_1, "Deeper into the alley", alley_2, "Back up the alley"
+            alley_1,
+            "Deeper into the alley",
+            alley_2,
+            "Back up the alley",
+            asset_id_prefix="ALLEY_EXIT",
         )
-        return True
 
     @release_step(2)
     def adding_random_item(self):
         wotsit = Item(
+            asset_id="WOTSIT",
             name="A Wotsit",
             description="It's a typical wotsit. A little worn but functional",
             game=self,
             graphic="",
         )
         wotsit.save()
-        return True
+
+    @release_step(3)
+    def test_rel(self):
+        thing = self.get_asset("ALLEY_EXIT_B")
+        thing.save()
 
 
 class CypherpunkPC(PlayerCharacter):
@@ -68,17 +78,13 @@ class CypherpunkPC(PlayerCharacter):
     @release_step(1)
     def dummy_update(self):
         print("Doing a dummy update")
-        return True
 
     @release_step(2)
     def adding_random_item(self):
-        wotsit = Item.objects.get(game=self.game, name="A Wotsit")
-        for i in Location.objects.filter(game=self.game):
-            print(i)
-        location = Location.objects.get(id=1)
+        wotsit = self.game.get_asset("WOTSIT")
+        location = self.game.get_asset("ALLEY")
         wotsit_location = LocationItem(location=location, pc=self, item=wotsit)
         wotsit_location.save()
-        return True
 
 
 class Deck(models.Model):

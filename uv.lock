@@ -111,6 +111,9 @@ requires-dist = [
     { name = "django-model-utils", specifier = ">=5.0.0" },
 ]
 
+[package.metadata.requires-dev]
+dev = [{ name = "pre-commit", specifier = ">=4.6.0" }]
+
 [[package]]
 name = "nodeenv"
 version = "1.10.0"
