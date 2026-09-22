@@ -9,13 +9,8 @@ class CypherpunkGame(Game):
     name = "Cypherpunk: Crouching Cypher, Hidden Punk"
     description = "Cypherpunk is a game of encryption and decryption. Enter a world of stuff, where things happen and people do things."
 
-    _latest_release = 3
-
     def initialise_game_instance(self):
         pass
-
-    def latest_release(self):
-        return self._latest_release
 
     @release_step(1)
     def initial_locations(self):
@@ -62,6 +57,91 @@ class CypherpunkGame(Game):
         thing = self.get_asset("ALLEY_EXIT_B")
         thing.save()
 
+    @release_step(4)
+    def test_rel2(self):
+        self.default_item_graphic = "nilpoint/ui_elements/item_tmp.png"
+        self.save()
+
+    @release_step(5)
+    def add_css_etc(self):
+        self.css = "cypherpunk/css/cypherpunk.css"
+        self.default_location_graphic = "cypherpunk/locations/00_none/simple.png"
+        self.save()
+
+    @release_step(6)
+    def add_item_graphic(self):
+        wotsit = self.get_asset("WOTSIT", Item)
+        wotsit.graphic = "nilpoint/ui_elements/dummy_item.png"
+        wotsit.save()
+
+    @release_step(7)
+    def add_mystery_device(self):
+        """Create a mystery device item with push_button and turn_off interactions."""
+        device = Item(
+            asset_id="MYSTERY_DEVICE",
+            name="Mystery Device",
+            description="A mysterious device with a button labelled 'push me'",
+            game=self,
+            graphic="",
+        )
+        device.save()
+        # Add interaction hooks
+        device.hooks.put("show", {"push_button": "show_push_button_device"})
+        device.hooks.put(
+            "handle",
+            {
+                "push_button": "handle_push_button_device",
+                "turn_off": "handle_turn_off_device",
+            },
+        )
+        device.hooks.put(
+            "can",
+            {
+                "push_button": "can_push_button_device",
+                "turn_off": "can_turn_off_device",
+            },
+        )
+
+    # Interaction hook methods for mystery device
+    def can_push_button_device(self, instance):
+        """Can only push button when item is in inventory (InventoryItem)."""
+        return instance.__class__.__name__ == "InventoryItem"
+
+    def can_turn_off_device(self, instance):
+        """Can only turn off when item is in inventory AND has been pushed."""
+        return (
+            instance.__class__.__name__ == "InventoryItem"
+            and instance.item_state.get("pushed", False)
+        )
+
+    def show_push_button_device(self, instance):
+        """Return template partial showing the device state."""
+        return "cypherpunk/interact/mystery_device.jinja2#push_button"
+
+    def handle_push_button_device(self, instance, request):
+        """Mark the device as pushed in its state."""
+        instance.item_state.put("pushed", True)
+
+    def handle_turn_off_device(self, instance, request):
+        """Turn off the device (reset pushed state)."""
+        instance.item_state.put("pushed", False)
+
+    def get_item_hooks(self, item):
+        """Return interaction hooks for items in this game."""
+        if item.asset_id == "MYSTERY_DEVICE":
+            return {
+                "show": {"push_button": "show_push_button_device"},
+                "handle": {
+                    "push_button": "handle_push_button_device",
+                    "turn_off": "handle_turn_off_device",
+                },
+                "can": {
+                    "push_button": "can_push_button_device",
+                    "turn_off": "can_turn_off_device",
+                },
+            }
+        return {"show": {}, "handle": {}, "can": {}}
+
 
 class CypherpunkPC(PlayerCharacter):
     def save(self, *args, **kwargs):
@@ -85,6 +165,27 @@ class CypherpunkPC(PlayerCharacter):
         location = self.game.get_asset("ALLEY")
         wotsit_location = LocationItem(location=location, pc=self, item=wotsit)
         wotsit_location.save()
+
+    @release_step(6)
+    def adding_data_to_wotsits(self):
+        wotsit = self.game.get_asset("WOTSIT")
+        from itertools import chain
+
+        combined_items = chain(
+            wotsit.inventories.for_character(self).all(),
+            wotsit.locations.for_character(self).all(),
+        )
+        for i in combined_items:
+            data = i.item_state
+            data.put("weight", 100)
+
+    @release_step(7)
+    def add_mystery_device_location_item(self):
+        """Create a LocationItem for the mystery device at the alley."""
+        device = self.game.get_asset("MYSTERY_DEVICE")
+        location = self.game.get_asset("ALLEY")
+        device_location = LocationItem(location=location, pc=self, item=device)
+        device_location.save()
 
 
 class Deck(models.Model):
