@@ -86,7 +86,15 @@ class CypherpunkGame(Game):
         )
         device.save()
         # Add interaction hooks
-        device.hooks.put("show", {"push_button": "show_push_button_device"})
+        device.hooks.put(
+            "show",
+            {
+                "push_button": {
+                    "method": "show_push_button_device",
+                    "label": "Push button",
+                },
+            },
+        )
         device.hooks.put(
             "handle",
             {
@@ -125,22 +133,6 @@ class CypherpunkGame(Game):
     def handle_turn_off_device(self, instance, request):
         """Turn off the device (reset pushed state)."""
         instance.item_state.put("pushed", False)
-
-    def get_item_hooks(self, item):
-        """Return interaction hooks for items in this game."""
-        if item.asset_id == "MYSTERY_DEVICE":
-            return {
-                "show": {"push_button": "show_push_button_device"},
-                "handle": {
-                    "push_button": "handle_push_button_device",
-                    "turn_off": "handle_turn_off_device",
-                },
-                "can": {
-                    "push_button": "can_push_button_device",
-                    "turn_off": "can_turn_off_device",
-                },
-            }
-        return {"show": {}, "handle": {}, "can": {}}
 
 
 class CypherpunkPC(PlayerCharacter):
