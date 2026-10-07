@@ -1,25 +1,16 @@
-{% load static i18n %}
-{% partialdef push_button %}
+{% load nilpoint_tags i18n %}
+{# The panel for the mystery device: one partial serves both actions, and which buttons are offered is decided by the interaction's `can` rule. The tag asks the interaction (in Python) for the currently available actions and each button acts with the action name. #}
+{% partialdef device %}
     <div class="mystery-device-interact">
-        {% if state.pushed %}
-            <p class="device-status device-activated">Device activated</p>
+        {% if instance.is_in_inventory %}
+            {% if pushed %}
+                <p class="device-status device-activated">Device activated</p>
+            {% else %}
+                <p class="device-status device-waiting">Device waiting</p>
+            {% endif %}
         {% else %}
-            <p class="device-status device-waiting">Device waiting</p>
+            <p class="device-status device-unreachable">The button is out of reach from here.</p>
         {% endif %}
-        <button type="button"
-                class="nilpoint-interact-action"
-                hx-post="{{ game.get_dispatch_url }}?action=interact"
-                hx-vals='{"item_type": "inventory_item", "object_id": {{ instance.id }}, "action": "push_button", "phase": "handle"}'
-                hx-target="#nilpoint-interaction-panel"
-                hx-swap="innerHTML"
-                {% if state.pushed or not is_inventory_item %}disabled{% endif %}>Push me</button>
-        {% if state.pushed and is_inventory_item %}
-            <button type="button"
-                    class="nilpoint-interact-action"
-                    hx-post="{{ game.get_dispatch_url }}?action=interact"
-                    hx-vals='{"item_type": "inventory_item", "object_id": {{ instance.id }}, "action": "turn_off", "phase": "handle"}'
-                    hx-target="#nilpoint-interaction-panel"
-                    hx-swap="innerHTML">Turn off</button>
-        {% endif %}
+        {% nilpoint_interact_actions instance %}
     </div>
 {% endpartialdef %}

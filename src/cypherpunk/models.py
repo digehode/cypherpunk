@@ -4,6 +4,8 @@ from model_utils.managers import InheritanceManager
 from nilpoint.decorators import release_step
 from nilpoint.models import Exit, Game, Item, Location, PlayerCharacter, LocationItem
 
+from .interactions import MysteryDevice
+
 
 class CypherpunkGame(Game):
     name = "Cypherpunk: Crouching Cypher, Hidden Punk"
@@ -76,63 +78,20 @@ class CypherpunkGame(Game):
 
     @release_step(7)
     def add_mystery_device(self):
-        """Create a mystery device item with push_button and turn_off interactions."""
-        device = Item(
+        """Create a mystery device, interactive via the MysteryDevice class.
+
+        All the release step does is name the class that implements the
+        behaviour.  The device's two actions, their labels, when they are
+        available and what they do all live in `cypherpunk.interactions`.
+        """
+        Item.objects.create(
             asset_id="MYSTERY_DEVICE",
             name="Mystery Device",
             description="A mysterious device with a button labelled 'push me'",
             game=self,
             graphic="",
+            interaction=MysteryDevice.dotted_path(),
         )
-        device.save()
-        # Add interaction hooks
-        device.hooks.put(
-            "show",
-            {
-                "push_button": {
-                    "method": "show_push_button_device",
-                    "label": "Push button",
-                },
-            },
-        )
-        device.hooks.put(
-            "handle",
-            {
-                "push_button": "handle_push_button_device",
-                "turn_off": "handle_turn_off_device",
-            },
-        )
-        device.hooks.put(
-            "can",
-            {
-                "push_button": "can_push_button_device",
-                "turn_off": "can_turn_off_device",
-            },
-        )
-
-    # Interaction hook methods for mystery device
-    def can_push_button_device(self, instance):
-        """Can only push button when item is in inventory (InventoryItem)."""
-        return instance.__class__.__name__ == "InventoryItem"
-
-    def can_turn_off_device(self, instance):
-        """Can only turn off when item is in inventory AND has been pushed."""
-        return (
-            instance.__class__.__name__ == "InventoryItem"
-            and instance.item_state.get("pushed", False)
-        )
-
-    def show_push_button_device(self, instance):
-        """Return template partial showing the device state."""
-        return "cypherpunk/interact/mystery_device.jinja2#push_button"
-
-    def handle_push_button_device(self, instance, request):
-        """Mark the device as pushed in its state."""
-        instance.item_state.put("pushed", True)
-
-    def handle_turn_off_device(self, instance, request):
-        """Turn off the device (reset pushed state)."""
-        instance.item_state.put("pushed", False)
 
 
 class CypherpunkPC(PlayerCharacter):
@@ -173,11 +132,10 @@ class CypherpunkPC(PlayerCharacter):
 
     @release_step(7)
     def add_mystery_device_location_item(self):
-        """Create a LocationItem for the mystery device at the alley."""
+        """Put the mystery device in the alley for this player's game."""
         device = self.game.get_asset("MYSTERY_DEVICE")
         location = self.game.get_asset("ALLEY")
-        device_location = LocationItem(location=location, pc=self, item=device)
-        device_location.save()
+        LocationItem(location=location, pc=self, item=device).save()
 
 
 class Deck(models.Model):
