@@ -1,0 +1,12 @@
+{% load nilpoint_tags i18n %}
+{# The panel for the scanner: a display that holds the last scan, and a button that only works while the scanner is carried. The display text comes from the interaction's `get_context`; the button is rendered by the tag, which asks the interaction (in Python) for the currently available actions. #}
+{% partialdef device %}
+    <div class="scanner-interact">
+        <p class="scanner-display" data-scanner-display>{{ display }}</p>
+        {% if instance.is_in_inventory %}
+            {% nilpoint_interact_actions instance %}
+        {% else %}
+            <p class="scanner-hint">The scanner's button is out of reach from here.</p>
+        {% endif %}
+    </div>
+{% endpartialdef %}

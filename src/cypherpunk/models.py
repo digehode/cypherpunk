@@ -4,7 +4,7 @@ from model_utils.managers import InheritanceManager
 from nilpoint.decorators import release_step
 from nilpoint.models import Exit, Game, Item, Location, PlayerCharacter, LocationItem
 
-from .interactions import MysteryDevice
+from .interactions import MysteryDevice, Scanner
 
 
 class CypherpunkGame(Game):
@@ -93,6 +93,24 @@ class CypherpunkGame(Game):
             interaction=MysteryDevice.dotted_path(),
         )
 
+    @release_step(8)
+    def add_scanner(self):
+        """Create a scanner, interactive via the Scanner class.
+
+        The button and display live in the scanner's interaction class; all
+        the release step names it and points `interaction_options` at the
+        location that has the signal, which the `ScanSignal` action reads.
+        """
+        Item.objects.create(
+            asset_id="SCANNER",
+            name="Scanner",
+            description="A handheld scanner with a small screen and a single button.",
+            game=self,
+            graphic="",
+            interaction=Scanner.dotted_path(),
+            interaction_options={"signal_location": "ALLEY_END"},
+        )
+
 
 class CypherpunkPC(PlayerCharacter):
     def save(self, *args, **kwargs):
@@ -136,6 +154,13 @@ class CypherpunkPC(PlayerCharacter):
         device = self.game.get_asset("MYSTERY_DEVICE")
         location = self.game.get_asset("ALLEY")
         LocationItem(location=location, pc=self, item=device).save()
+
+    @release_step(8)
+    def add_scanner_location_item(self):
+        """Put the scanner in the alley for this player's game."""
+        scanner = self.game.get_asset("SCANNER")
+        location = self.game.get_asset("ALLEY")
+        LocationItem(location=location, pc=self, item=scanner).save()
 
 
 class Deck(models.Model):
