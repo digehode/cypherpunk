@@ -111,22 +111,23 @@ class CypherpunkGame(Game):
             interaction_options={"signal_location": "ALLEY_END"},
         )
 
-
     @release_step(9)
     def add_arcade_demo(self):
-        """Add a room from the arcade, including the scrap of paper.
-        """
+        """Add a room from the arcade, including the scrap of paper."""
 
-        if self.get_asset("SCRAP_A", Item) is None:
+        try:
+            self.get_asset("SCRAP_A", Item)
+        except models.ObjectDoesNotExist:
             Item.objects.create(
                 asset_id="SCRAP_A",
                 name="Scrap of Paper",
-                description="A scrap of paper with the text \"Tol, S pyexn kx yvn cdybkqo byyw sx dro kvvoi. Xydrsxq yp kxi eco sx sd, led sd vyyuc klkxnyxon. Wsqrd lo k qyyn zvkmo dy dy vso vyg. Dro zkccgybn pyb dro nyyb sc CGYBNPSCR\" written on it",
+                description='A scrap of paper with the text "Tol, S pyexn kx yvn cdybkqo byyw sx dro kvvoi. Xydrsxq yp kxi eco sx sd, led sd vyyuc klkxnyxon. Wsqrd lo k qyyn zvkmo dy dy vso vyg. Dro zkccgybn pyb dro nyyb sc CGYBNPSCR" written on it',
                 game=self,
                 graphic="cypherpunk/items/scrap_of_paper_a.png",
             )
-        arcade_se=self.get_asset("ARCADE_SE", Location)
-        if arcade_se is None:
+        try:
+            arcade_se = self.get_asset("ARCADE_SE", Location)
+        except models.ObjectDoesNotExist:
             arcade_se = Location.objects.create(
                 asset_id="ARCADE_SE",
                 name="Arcade Corner (SE)",
@@ -135,8 +136,8 @@ class CypherpunkGame(Game):
                 graphic="cypherpunk/locations/02_arcade/arcade_se.png",
                 initial=False,
             )
-        
-        alley=self.get_asset("ALLEY_END", Location)
+
+        alley = self.get_asset("ALLEY_END", Location)
         print(alley)
         print(arcade_se)
         e1, e2 = Exit.create_two_way_exit(
@@ -147,7 +148,7 @@ class CypherpunkGame(Game):
             asset_id_prefix="ALLEY_ARCADE_EXIT",
         )
 
-        
+
 class CypherpunkPC(PlayerCharacter):
     def save(self, *args, **kwargs):
         # Check if it's a new instance (no ID yet)
@@ -198,13 +199,13 @@ class CypherpunkPC(PlayerCharacter):
         location = self.game.get_asset("ALLEY")
         LocationItem(location=location, pc=self, item=scanner).save()
 
-
     @release_step(9)
     def add_scrap_of_paper(self):
-        paper=self.game.get_asset("SCRAP_A", Item)
-        arcade_se=self.game.get_asset("ARCADE_SE", Location)
+        paper = self.game.get_asset("SCRAP_A", Item)
+        arcade_se = self.game.get_asset("ARCADE_SE", Location)
         LocationItem(location=arcade_se, pc=self, item=paper).save()
-        
+
+
 class Deck(models.Model):
     """Represents the comms deck of a player character
 
