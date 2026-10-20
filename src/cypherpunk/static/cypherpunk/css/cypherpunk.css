@@ -7,6 +7,85 @@
     src: url("/static/cypherpunk/fonts/PixelifySans-VariableFont_wght.ttf");
 }
 
+:root {
+    /* The readable/action green: dark enough on light surfaces, bright enough
+       on dark ones. */
+    --cypherpunk-accent: light-dark(#1f6b3f, #4ade80);
+    /* The edge green for panel and bezel borders: a touch lighter than the
+       accent, still >=3:1 against the surface behind it. */
+    --cypherpunk-edge: light-dark(#2f8f57, #3fae6a);
+    --cypherpunk-glow: light-dark(
+        rgba(31, 107, 63, 0.12),
+        rgba(74, 222, 128, 0.2)
+    );
+
+    /* Panels keep core's neutral surface; the accent rims them and adds a
+       faint inner glow rather than tinting the whole screen. */
+    --nilpoint-panel-border: var(--cypherpunk-edge);
+    --nilpoint-panel-shadow:
+        0 1px 2px var(--nilpoint-shadow-color),
+        inset 0 0 16px var(--cypherpunk-glow);
+
+    --nilpoint-label-color: var(--cypherpunk-accent);
+    --nilpoint-label-spacing: 0.2em;
+
+    --nilpoint-action-accent: var(--cypherpunk-accent);
+    --nilpoint-action-color: light-dark(#ffffff, #04140a);
+    --nilpoint-action-glow: 0 0 8px var(--cypherpunk-glow);
+
+    --nilpoint-item-slot-bg: light-dark(
+        rgba(31, 107, 63, 0.06),
+        rgba(74, 222, 128, 0.08)
+    );
+    --nilpoint-scene-caption-color: light-dark(#eaffea, #d6ffe0);
+
+    --nilpoint-log-entry-info: light-dark(#3a5541, #9ad7a6);
+    --nilpoint-log-entry-success: light-dark(#1f7a48, #4ade80);
+    --nilpoint-log-entry-error: light-dark(#a5261f, #ff8f86);
+
+    /* The console bezel: a green-rimmed frame around the neutral screens. */
+    --nilpoint-bezel-bg: light-dark(#f3f7f3, #0c120c);
+    --nilpoint-bezel-border: var(--cypherpunk-edge);
+    --nilpoint-bezel-border-width: 2px;
+    --nilpoint-bezel-radius: 1rem;
+    --nilpoint-bezel-padding: clamp(0.75rem, 2vw, 1.5rem);
+    --nilpoint-bezel-shadow: 0 0 18px var(--cypherpunk-glow);
+}
+
+/* A small power LED on the frame, in the accent colour. */
+.nilpoint-bezel {
+    position: relative;
+}
+
+.nilpoint-bezel::after {
+    content: "";
+    position: absolute;
+    top: -0.3rem;
+    right: 1.2rem;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--cypherpunk-accent);
+    box-shadow: 0 0 6px var(--cypherpunk-accent);
+    pointer-events: none;
+}
+
+.nilpoint-panel-label {
+    font-family: "Kode Mono", monospace;
+    text-shadow: 0 0 4px var(--cypherpunk-glow);
+}
+
+.nilpoint-scene-caption {
+    font-family: "Kode Mono", monospace;
+    letter-spacing: 0.08em;
+}
+
+.nilpoint-interact-action {
+    font-family: "Kode Mono", monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
 /* #nilpoint-container { */
 /* } */
 
@@ -20,7 +99,6 @@
     overflow-x: auto;
 }
 
-/* The structural wrapper frame (Must match HTML spelling) */
 .cypherpunk-module-slot {
     height: 100%; /* Explicitly match deck height */
     aspect-ratio: 4 / 3; /* Mandate the 4:3 ratio shape */
@@ -39,6 +117,49 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+}
+
+/* Terminal log: a green transcript on a surface that flips with the theme. */
+#nilpoint-log {
+    background-color: light-dark(#f2f8f2, #070d07);
+    color: light-dark(#123a24, #b7f7c0);
+    font-family: "Kode Mono", "lcd-text", monospace;
+    text-shadow: 0 0 4px var(--cypherpunk-glow);
+    position: relative;
+}
+
+/* Faint scanlines, theme-aware. */
+#nilpoint-log::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        to bottom,
+        var(--cypherpunk-glow) 0px,
+        var(--cypherpunk-glow) 1px,
+        transparent 1px,
+        transparent 4px
+    );
+    opacity: 0.5;
+}
+
+/* WebKit scrollbar for the CRT look */
+#nilpoint-log::-webkit-scrollbar {
+    width: 0.5rem;
+}
+
+#nilpoint-log::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#nilpoint-log::-webkit-scrollbar-thumb {
+    background: var(--cypherpunk-edge);
+    border-radius: 0.25rem;
+}
+
+#nilpoint-log::-webkit-scrollbar-thumb:hover {
+    background: var(--cypherpunk-accent);
 }
 
 /* Module Styles */
