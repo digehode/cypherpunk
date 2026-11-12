@@ -11,7 +11,19 @@ judges when its actions are available (`can`); each `Action` is where the
 effect of one named thing lives (`handle`).
 """
 
-from nilpoint.interactions import Action, InteractiveItem, SetState
+from nilpoint.interactions import Action, InteractiveItem, SetState, ExitInteraction
+
+
+class ApartmentDoorInteraction(ExitInteraction):
+
+    def usable(self, instance):
+        """Whether this player may use the exit.  Default True."""
+        return self.pc.check_holding("APARTMENT_KEY")
+
+    def refusal(self, instance):
+        """The message logged when the exit refuses this player."""
+        return "You don't have the key for the apartment door at the moment."
+
 
 
 class MysteryDevice(InteractiveItem):
