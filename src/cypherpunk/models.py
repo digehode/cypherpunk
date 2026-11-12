@@ -17,34 +17,38 @@ class CypherpunkGame(Game):
     @release_step(1)
     def initial_locations(self):
         # Locations
-        apartment=Location(
+        apartment=Location.objects.update_or_create(
             asset_id="APARTMENT",
-            name="Apartment",
-            description="Your apartment in block 7. It's cosy and comfortable. You've lived here for the past 8 years after inheriting it from a distant relative you never really knew.",
             game=self,
-            graphic="cypherpunk/locations/00_apartment/living_room.png",
-            initial=True,
+            defaults={
+                "name":"Apartment",
+                "description":"Your apartment in block 7. It's cosy and comfortable. You've lived here for the past 8 years after inheriting it from a distant relative you never really knew.",
+                "graphic":"cypherpunk/locations/00_apartment/living_room.png",
+                "initial":True,
+            }
         )
-        apartment.save()
-        storage=Location(
-            asset_id="STORAGE_FRONT",
-            name="Outside Heirloom Storage",
-            description="Heirloom storage is the local storage facility. It's always been here, but you've never actually been inside.  Anyone can request a storage room and store whatever they want, keeping their apartment from becoming cluttered.  You've just never really accumulated enough stuff to need a storage room.",
-            game=self,
-            graphic="cypherpunk/locations/01_storage/storage_front.png",
-            initial=False,
-        )
-        storage.save()
-        
-        ap_key = Item(
-            asset_id="APARTMENT_KEY",
-            name="A plain brass key",
-            description="It's a key with a keyring that says 'Block 7, Apartment 19'",
-            game=self,
-            graphic="cypherpunk/items/apartment_key.png",
-        )
-        ap_key.save()
 
+        storage=Location.objects.update_or_create(
+            asset_id="STORAGE_FRONT",
+            game=self,
+            defaults={
+                "name":"Outside Heirloom Storage",
+            "description":"Heirloom storage is the local storage facility. It's always been here, but you've never actually been inside.  Anyone can request a storage room and store whatever they want, keeping their apartment from becoming cluttered.  You've just never really accumulated enough stuff to need a storage room.",
+            "graphic":"cypherpunk/locations/01_storage/storage_front.png",
+            "initial":False,
+            }
+        )
+        
+        ap_key = Item.objects.update_or_create(
+            asset_id="APARTMENT_KEY",
+            game=self,
+            defaults={
+                "name":"A plain brass key",
+                "description":"It's a key with a keyring that says 'Block 7, Apartment 19'",
+                "graphic":"cypherpunk/items/apartment_key.png",
+            }
+        )
+     
         e1, e2 = Exit.create_two_way_exit(
             apartment,
             "Head to the storage facility",

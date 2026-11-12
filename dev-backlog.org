@@ -1,0 +1,13 @@
+#+OPTIONS: ^:nil
+* Fixes [/]
+
+- [ ] Scrolling doesn't work when the mouse is over one of the panels
+- [ ] Exit interaction messages clobber the exit list until a refresh
+  or trigger that redraws it
+
+* Quick improvements
+
+- [X] Use update_or_create to make objects - easier to re-run failed updates
+
+
+* Features
